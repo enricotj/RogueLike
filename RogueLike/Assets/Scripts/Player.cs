@@ -34,7 +34,8 @@ public class Player : MonoBehaviour {
         // Attack/ability logic
         if (Input.GetMouseButtonDown(0))
         {
-           Instantiate(bulletPrefab, new Vector3(transform.position.x, transform.position.y, 10.0f), transform.rotation);
+            Vector3 looking = (transform.rotation * Vector3.right) * 0.4f;
+            Instantiate(bulletPrefab, new Vector3(transform.position.x + looking.x, transform.position.y + looking.y, 10.0f), transform.rotation);
         }
 	}
 
