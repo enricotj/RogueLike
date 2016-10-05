@@ -5,18 +5,8 @@ using System.Text;
 
 namespace Assets.Scripts
 {
-    class PlayerStats
+    public class Stats
     {
-        /*
-        public enum Status
-        {
-            Vulnerable,
-            Intangible,
-            Invincible
-        }
-        private Status status;
-        */
-
         private float maxHealth;
         private float health;
 
@@ -38,7 +28,12 @@ namespace Assets.Scripts
             set { moveSpeed = value; }
         }
 
-        public PlayerStats(float maxHealth, float moveSpeed)
+        public Stats()
+        {
+
+        }
+
+        public Stats(float maxHealth, float moveSpeed)
         {
             this.maxHealth = maxHealth;
             this.health = this.maxHealth;

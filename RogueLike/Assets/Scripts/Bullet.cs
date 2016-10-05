@@ -13,11 +13,6 @@ public class Bullet : MonoBehaviour {
         Vector3 looking = transform.rotation * Vector3.right;
         rb.velocity = (new Vector2(looking.x, looking.y)) * speed;
     }
-	
-	void Update ()
-    {
-	    
-	}
 
     void OnCollisionEnter2D(Collision2D collision)
     {
