@@ -14,9 +14,17 @@ public class Player : MonoBehaviour {
     private const float SHAKE_AMOUNT = 0.1f;
     private float shakeTimeStop = 0;
 
-    private float accel = 100;
+    private float acceleration = 100;
     private float friction = 0.6f;
     private Rigidbody2D rb;
+
+    public float Acceleration
+    {
+        get
+        {
+            return acceleration;
+        }
+    }
 
 	// Use this for initialization
 	void Start ()
@@ -55,11 +63,12 @@ public class Player : MonoBehaviour {
         Vector3 move = CaptureMovementInput();
         float dx = move.x;
         float dy = move.y;
-		float ax = dx * accel;
-		float ay = dy * accel;
+		float ax = dx * acceleration;
+		float ay = dy * acceleration;
 		this.rb.AddForce(new Vector2 (ax, ay));
 		this.rb.velocity = Mathf.Clamp(this.rb.velocity.magnitude, 0, stats.MoveSpeed) * this.rb.velocity.normalized;
-		if (dx == 0 && dy == 0)
+		/*
+        if (dx == 0 && dy == 0)
 		{
 			this.rb.velocity *= friction;
 			if (this.rb.velocity.magnitude < 0.001f)
@@ -67,6 +76,7 @@ public class Player : MonoBehaviour {
 				this.rb.velocity = new Vector2(0, 0);
 			}
 		}
+        */
 
         // adjust camera offset
         Vector3 mouseInWorld = cam.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);

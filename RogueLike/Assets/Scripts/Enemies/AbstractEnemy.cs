@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Assets.Scripts
 {
-    abstract class AbstractEnemy
+    abstract public class AbstractEnemy
     {
-        protected EnemyStats stats;
+        //protected EnemyStats stats;
 
         
     }
