@@ -3,10 +3,9 @@ using System.Collections;
 
 public class PlayerInputComponent : InputComponent {
 
-    public override void ReadInputs(GameObject gameObject)
+    public override void ReadInputs(ActorComponent actor)
     {
-        ActorComponent actor = gameObject.GetComponent<ActorComponent>();
-        Rigidbody2D rigidBody = gameObject.GetComponent<Rigidbody2D>();
+        Rigidbody2D rigidBody = actor.GetComponent<Rigidbody2D>();
 
         float dx = 0;
         float dy = 0;

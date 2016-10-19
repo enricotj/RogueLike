@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 
-abstract public class InputComponent : MonoBehaviour {
-    abstract public void ReadInputs(GameObject gameObject);
+abstract public class InputComponent {
+    abstract public void ReadInputs(ActorComponent actor);
 }
