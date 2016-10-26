@@ -54,6 +54,10 @@ namespace Assets.Scripts.Abstract_Actor_Components
     public enum Transition
     {
         NullTransition = 0, // Use this transition to represent a non-existing transition in your system
+        StartWalk = 1,
+        EndWalk = 2,
+        StartAttack = 3,
+        EndAttack = 4
     }
 
     /// <summary>
@@ -62,7 +66,10 @@ namespace Assets.Scripts.Abstract_Actor_Components
     /// </summary>
     public enum StateID
     {
-        NullStateID = 0, // Use this ID to represent a non-existing State in your system	
+        NullStateID = 0, // Use this ID to represent a non-existing State in your system
+        Idle = 1,
+        Walking = 2,
+        Attacking = 3
     }
 
     /// <summary>
@@ -161,14 +168,14 @@ namespace Assets.Scripts.Abstract_Actor_Components
         /// This method decides if the state should transition to another on its list
         /// NPC is a reference to the object that is controlled by this class
         /// </summary>
-        public abstract void Reason(GameObject player, GameObject npc);
+        public abstract void Reason(ActorComponent actor);
 
         /// <summary>
         /// This method controls the behavior of the NPC in the game World.
         /// Every action, movement or communication the NPC does should be placed here
         /// NPC is a reference to the object that is controlled by this class
         /// </summary>
-        public abstract void Act(GameObject player, GameObject npc);
+        public abstract void Act(ActorComponent actor);
 
     } // class FSMState
 

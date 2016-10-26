@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Abstract_Actor_Components;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -17,8 +18,24 @@ public class ActorComponent : MonoBehaviour {
     }
 
     // define stats
-    protected float Acceleration = 50;
-    protected float MoveSpeed = 5;
+    protected float acceleration = 50;
+    protected float moveSpeed = 5;
+
+    public float Acceleration
+    {
+        get
+        {
+            return acceleration;
+        }
+    }
+
+    public float MoveSpeed
+    {
+        get
+        {
+            return moveSpeed;
+        }
+    }
     
     // define inputs
     public Vector2 MovementIntent = new Vector2(0, 0);
@@ -26,9 +43,9 @@ public class ActorComponent : MonoBehaviour {
 
     // define components
     private InputComponent input;
-    private Rigidbody2D rigidBody;
-    private Animator animator;
-    
+    public Rigidbody2D rigidBody;
+    public Animator animator;
+    private ActorFSM fsm;
 
 	// Use this for initialization
 	void Start ()
@@ -36,39 +53,51 @@ public class ActorComponent : MonoBehaviour {
         input = new PlayerInputComponent();
         rigidBody = this.GetComponent<Rigidbody2D>();
         animator = this.GetComponent<Animator>();
+
+        MakeFSM();
 	}
+
+    protected virtual void MakeFSM()
+    {
+        IdleState idle = new IdleState();
+        idle.AddTransition(Transition.StartWalk, StateID.Walking);
+
+        WalkingState walking = new WalkingState();
+        walking.AddTransition(Transition.EndWalk, StateID.Idle);
+
+        fsm = new ActorFSM();
+        fsm.AddState(idle);
+        fsm.AddState(walking);
+    }
+
+    public virtual void PerformTransition(Transition t)
+    {
+        fsm.PerformTransition(t);
+    }
 
     void FixedUpdate()
     {
-        // TODO: refactor out into StateMachine component?
-
-        Vector2 positionOnScreen = GameObject.Find("Main Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
-        Vector2 mouseOnScreen = (Vector2)GameObject.Find("Main Camera").GetComponent<Camera>().ScreenToViewportPoint(LookTowards);
-        float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen) + 180;
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-
-        rigidBody.AddForce(MovementIntent * Acceleration);
-        rigidBody.velocity = Mathf.Clamp(rigidBody.velocity.magnitude, 0, MoveSpeed) * rigidBody.velocity.normalized;
-        if (MovementIntent.magnitude == 0 && rigidBody.velocity.magnitude != 0)
-        {
-            rigidBody.AddForce(rigidBody.velocity.normalized * -1f * Acceleration);
-            if (rigidBody.velocity.magnitude < 0.001f)
-            {
-                rigidBody.velocity = new Vector2(0, 0);
-            }
-        }
+        fsm.CurrentState.Reason(this);
+        fsm.CurrentState.Act(this);
     }
 
     void Update()
     {
         input.ReadInputs(this);
+
+        // TODO: refactor into FSM system
+        Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        Vector2 positionOnScreen = camera.WorldToViewportPoint(transform.position);
+        Vector2 mouseOnScreen = (Vector2)camera.ScreenToViewportPoint(LookTowards);
+        float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen) + 180;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 
     public virtual void Attack()
     {
+        // TODO: refactor into FSM system
         animator.SetTrigger("Attack");
     }
-
 
     private float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
     {
