@@ -6,46 +6,26 @@ using Assets.Scripts.Abstract_Actor_Components;
 [RequireComponent(typeof(Animator))]
 public class ActorComponent : MonoBehaviour {
 
-    // TODO: refactor into StatMachine component
-    // prototype of possible states
-    public enum State
-    {
-        Idle,
-        Moving,
-        Attacking,
-        InKnockback,
-        Frozen
-    }
-
-    // define stats
-    protected float acceleration = 50;
-    protected float moveSpeed = 5;
-
-    public float Acceleration
-    {
-        get
-        {
-            return acceleration;
-        }
-    }
-
-    public float MoveSpeed
-    {
-        get
-        {
-            return moveSpeed;
-        }
-    }
-    
-    // define inputs
-    public Vector2 MovementIntent = new Vector2(0, 0);
-    public Vector2 LookTowards = new Vector2(0, 0);
-
     // define components
     private InputComponent input;
     public Rigidbody2D rigidBody;
     public Animator animator;
     private ActorFSM fsm;
+
+    // define stats
+    protected float acceleration = 50;
+    protected float moveSpeed = 5;
+    protected float Rotation = 0;
+
+    public float Acceleration { get { return acceleration; } }
+    public float MoveSpeed { get { return moveSpeed; } }
+    public Vector3 Position { get { return this.transform.position; } }
+
+    public bool IsAnimationInSync { get { return animator.GetCurrentAnimatorStateInfo(0).IsName(fsm.CurrentState.Name); } }
+    
+    // define inputs
+    public Vector2 MovementIntent = new Vector2(0, 0);
+    public float RotationIntent = 0;
 
 	// Use this for initialization
 	void Start ()
@@ -61,13 +41,19 @@ public class ActorComponent : MonoBehaviour {
     {
         IdleState idle = new IdleState();
         idle.AddTransition(Transition.StartWalk, StateID.Walking);
+        idle.AddTransition(Transition.StartAttack, StateID.Attacking);
 
         WalkingState walking = new WalkingState();
         walking.AddTransition(Transition.EndWalk, StateID.Idle);
+        walking.AddTransition(Transition.StartAttack, StateID.Attacking);
+
+        AttackingState attacking = new AttackingState();
+        attacking.AddTransition(Transition.EndAttack, StateID.Idle);
 
         fsm = new ActorFSM();
         fsm.AddState(idle);
         fsm.AddState(walking);
+        fsm.AddState(attacking);
     }
 
     public virtual void PerformTransition(Transition t)
@@ -77,30 +63,33 @@ public class ActorComponent : MonoBehaviour {
 
     void FixedUpdate()
     {
-        fsm.CurrentState.Reason(this);
-        fsm.CurrentState.Act(this);
+        fsm.CurrentState.ActFixed(this);
     }
 
     void Update()
     {
+        ResetAnimatorParameters();
         input.ReadInputs(this);
+        
+        fsm.CurrentState.Reason(this);
+        fsm.CurrentState.Act(this);
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, Rotation));
+    }
 
-        // TODO: refactor into FSM system
-        Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-        Vector2 positionOnScreen = camera.WorldToViewportPoint(transform.position);
-        Vector2 mouseOnScreen = (Vector2)camera.ScreenToViewportPoint(LookTowards);
-        float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen) + 180;
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+    public virtual void Look()
+    {
+        Rotation = RotationIntent;
     }
 
     public virtual void Attack()
     {
-        // TODO: refactor into FSM system
-        animator.SetTrigger("Attack");
+        this.rigidBody.velocity = new Vector2(0, 0);
+        animator.SetBool("TryAttack", true);
     }
 
-    private float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
+    public virtual void ResetAnimatorParameters()
     {
-        return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
+        animator.SetBool("TryAttack", false);
     }
+
 }

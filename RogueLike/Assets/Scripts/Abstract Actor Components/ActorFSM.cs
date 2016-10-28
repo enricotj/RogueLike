@@ -86,6 +86,9 @@ namespace Assets.Scripts.Abstract_Actor_Components
         protected StateID stateID;
         public StateID ID { get { return stateID; } }
 
+        protected string name;
+        public string Name { get { return name; } }
+
         public void AddTransition(Transition trans, StateID id)
         {
             // Check if anyone of the args is invalid
@@ -176,6 +179,7 @@ namespace Assets.Scripts.Abstract_Actor_Components
         /// NPC is a reference to the object that is controlled by this class
         /// </summary>
         public abstract void Act(ActorComponent actor);
+        public abstract void ActFixed(ActorComponent actor);
 
     } // class FSMState
 

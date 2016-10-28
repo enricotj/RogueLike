@@ -6,12 +6,13 @@ using UnityEngine;
 
 namespace Assets.Scripts.Abstract_Actor_Components
 {
-    public class WalkingState : FSMState
+    public class WalkingState : IdleState
     {
 
         public WalkingState()
         {
             this.stateID = StateID.Walking;
+            this.name = "Walking";
         }
 
         public override void DoBeforeEntering()
@@ -26,13 +27,22 @@ namespace Assets.Scripts.Abstract_Actor_Components
 
         public override void Reason(ActorComponent actor)
         {
-            if (actor.rigidBody.velocity.magnitude == 0)
+            if (actor.animator.GetBool("TryAttack"))
+            {
+                actor.PerformTransition(Transition.StartAttack);
+            }
+            else if (actor.rigidBody.velocity.magnitude == 0)
             {
                 actor.PerformTransition(Transition.EndWalk);
             }
         }
 
         public override void Act(ActorComponent actor)
+        {
+            base.Act(actor);
+        }
+
+        public override void ActFixed(ActorComponent actor)
         {
             Rigidbody2D rigidBody = actor.rigidBody;
             Vector2 movementIntent = actor.MovementIntent;

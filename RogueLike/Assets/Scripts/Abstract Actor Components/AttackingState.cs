@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 namespace Assets.Scripts.Abstract_Actor_Components
 {
-    public class IdleState : FSMState
+    public class AttackingState : FSMState
     {
-        
-        public IdleState()
+        public AttackingState()
         {
-            this.stateID = StateID.Idle;
-            this.name = "Idle";
+            this.stateID = StateID.Attacking;
+            this.name = "Attacking";
         }
 
         public override void DoBeforeEntering()
@@ -26,19 +27,15 @@ namespace Assets.Scripts.Abstract_Actor_Components
 
         public override void Reason(ActorComponent actor)
         {
-            if (actor.animator.GetBool("TryAttack"))
+            if (!actor.IsAnimationInSync)
             {
-                actor.PerformTransition(Transition.StartAttack);
-            }
-            else if (actor.MovementIntent.magnitude != 0)
-            {
-                actor.PerformTransition(Transition.StartWalk);
+                actor.PerformTransition(Transition.EndAttack);
             }
         }
 
         public override void Act(ActorComponent actor)
         {
-            actor.Look();
+            
         }
 
         public override void ActFixed(ActorComponent actor)

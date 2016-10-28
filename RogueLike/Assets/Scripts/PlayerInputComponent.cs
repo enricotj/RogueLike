@@ -21,7 +21,10 @@ public class PlayerInputComponent : InputComponent {
         actor.MovementIntent = (new Vector2(dx, dy)).normalized;
 
         // look
-        actor.LookTowards = Input.mousePosition;
+        Camera camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+        Vector2 positionOnScreen = camera.WorldToViewportPoint(actor.Position);
+        Vector2 mouseOnScreen = (Vector2)camera.ScreenToViewportPoint(Input.mousePosition);
+        actor.RotationIntent = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen) + 180;
 
         // attack/act
         if (!Input.GetKey(KeyCode.LeftShift))
@@ -46,6 +49,11 @@ public class PlayerInputComponent : InputComponent {
 
             }
         }
-
     }
+
+    private float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
+    {
+        return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
+    }
+
 }
