@@ -2,47 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using UnityEngine;
 
-namespace Assets.Scripts.Abstract_Actor_Components
+namespace Assets.Scripts.Abstract_Actor_Components.States
 {
-    public class WalkingState : IdleState
+    public class IdleState : IState
     {
 
-        public WalkingState()
+        public void OnEnter(ActorComponent actor)
         {
-            this.stateID = StateID.Walking;
-            this.name = "Walking";
         }
 
-        public override void DoBeforeEntering()
+        public void OnLeave(ActorComponent actor)
         {
-            base.DoBeforeEntering();
         }
 
-        public override void DoBeforeLeaving()
-        {
-            base.DoBeforeLeaving();
-        }
-
-        public override void Reason(ActorComponent actor)
-        {
-            if (actor.animator.GetBool("TryAttack"))
-            {
-                actor.PerformTransition(Transition.StartAttack);
-            }
-            else if (actor.rigidBody.velocity.magnitude == 0)
-            {
-                actor.PerformTransition(Transition.EndWalk);
-            }
-        }
-
-        public override void Act(ActorComponent actor)
-        {
-            base.Act(actor);
-        }
-
-        public override void ActFixed(ActorComponent actor)
+        public void FixedUpdate(ActorComponent actor)
         {
             Rigidbody2D rigidBody = actor.rigidBody;
             Vector2 movementIntent = actor.MovementIntent;
@@ -60,5 +36,11 @@ namespace Assets.Scripts.Abstract_Actor_Components
                 }
             }
         }
+
+        public void Update(ActorComponent actor)
+        {
+            actor.Look();
+        }
+
     }
 }

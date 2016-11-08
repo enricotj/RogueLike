@@ -15,7 +15,6 @@ public class Player : MonoBehaviour {
     private float shakeTimeStop = 0;
 
     private float acceleration = 50;
-    private float friction = 0.6f;
     private Rigidbody2D rb;
 
     public float Acceleration

@@ -5,8 +5,6 @@ public class PlayerInputComponent : InputComponent {
 
     public override void ReadInputs(ActorComponent actor)
     {
-        Rigidbody2D rigidBody = actor.GetComponent<Rigidbody2D>();
-
         // move
         float dx = 0;
         float dy = 0;
